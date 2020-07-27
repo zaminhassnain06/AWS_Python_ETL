@@ -4,9 +4,9 @@ with open("README.md", "r") as fh:
 setuptools.setup(
      name='veracode',
      version='0.1',
-     author="Roshan Baig",
-     author_email="roshan.baig@northbaysolutions.net",
-     description="Veracode lite",
+     author="",
+     author_email="",
+     description="",
      long_description=long_description,
      long_description_content_type="text/markdown",
      packages=setuptools.find_packages(),
