@@ -1,0 +1,39 @@
+"""ingestion worker """
+import math
+import pandas
+import db_utility
+import table_utility
+import boto3
+import ssm_utility
+import pymysql
+
+S3_CLIENT = boto3.client('s3', region_name='us-east-1')
+BUCKET_NAME = ssm_utility.get_ssm_value('/teamb/s3/bucketname')
+BUCKET_FOLDER = "out_files"
+
+DB_NAME, TABLE_LIST = table_utility.get_table_list()
+DB_CONNECTION = db_utility.get_db_connection(DB_NAME)
+
+
+def execute_outfile(db_connection):
+    """Executes outfile query"""
+    try:
+        cur = db_connection.cursor()
+        table_name = 'page'
+        column_name = 'id'
+        starting_value = 1
+        ending_value = 100
+        outfile_sql = "SELECT * FROM " + str(table_name) + " WHERE " + str(column_name) + " >= " + str(starting_value) + \
+                      " AND " + str(column_name) + " <= " + str(ending_value) + \
+                      " INTO OUTFILE S3 's3://veracode-lite-team-b/out_files'" \
+                      " FIELDS TERMINATED BY ',' " \
+                      " LINES TERMINATED BY '\\n' "
+        cur.execute(outfile_sql)
+
+        print(outfile_sql)
+    except Exception as error:
+        print(error)
+        raise
+
+
+execute_outfile(DB_CONNECTION)
